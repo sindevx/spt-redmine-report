@@ -17,12 +17,14 @@ Not for auto-creating issues by default — this skill produces a report. Pushin
 
 ## Step 0 — Ask before touching git or Redmine
 
-Two questions, one at a time:
+Present these as a table, not a prose list:
 
-1. **Scope** — whole release (many commits/features bundled) or one dev section (single feature/task)?
-2. **Existing parent issue** — does the user already have a story/epic/task assigned (e.g. by a manager)? If yes, get its id and, when a Redmine MCP tool is available, fetch its real subject/description/acceptance criteria before writing anything — build only the subtasks that fit under it, don't duplicate the story. If no, this skill builds the story/epic from scratch.
+| # | Question | Options |
+|---|----------|---------|
+| 1 | Scope | Whole release (many commits/features bundled) / One dev section (single feature or task) |
+| 2 | Existing parent issue | Yes — give issue id (fetch its real subject/description/acceptance criteria via Redmine MCP if available, then build only the subtasks that fit under it — don't duplicate the story) / No — build the story/epic from scratch |
 
-Skipping this and guessing scope, or re-deriving a story that already exists, is the most common failure — verified: an earlier run of this exact task drafted full stories before asking, and had to redo the breakdown once scope and an assigned-issue question came up.
+Ask both before running any git or Redmine command. Skipping this and guessing scope, or re-deriving a story that already exists, is the most common failure — verified: an earlier run of this exact task drafted full stories before asking, and had to redo the breakdown once scope and an assigned-issue question came up.
 
 ## Step 1 — Find the commit range
 
