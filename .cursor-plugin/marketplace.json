@@ -1,0 +1,17 @@
+{
+  "name": "spt-redmine-report",
+  "owner": {
+    "name": "sindevx"
+  },
+  "metadata": {
+    "description": "Redmine draft-report skill for Cursor",
+    "version": "1.1.0"
+  },
+  "plugins": [
+    {
+      "name": "spt-redmine-report",
+      "source": "./",
+      "description": "Prepare Redmine story/task drafts from finished git work."
+    }
+  ]
+}

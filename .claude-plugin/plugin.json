@@ -1,0 +1,13 @@
+{
+  "name": "spt-redmine-report",
+  "version": "1.1.0",
+  "description": "Prepare Redmine story/task drafts from finished git work. One-time setup via /setup-spt-redmine-report. Never writes to Redmine by itself.",
+  "author": {
+    "name": "sindevx",
+    "url": "https://github.com/sindevx/spt-redmine-report"
+  },
+  "homepage": "https://github.com/sindevx/spt-redmine-report",
+  "repository": "https://github.com/sindevx/spt-redmine-report",
+  "license": "MIT",
+  "keywords": ["redmine", "release-report", "skills", "planning"]
+}

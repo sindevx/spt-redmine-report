@@ -1,0 +1,19 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "spt-redmine-report",
+  "description": "Draft Redmine release reports from finished git work (Claude Code plugin marketplace).",
+  "owner": {
+    "name": "sindevx",
+    "url": "https://github.com/sindevx"
+  },
+  "plugins": [
+    {
+      "name": "spt-redmine-report",
+      "source": "./",
+      "description": "Prepare Redmine story/task drafts from commits and evidence. Never writes to Redmine until a separate confirm/push step.",
+      "version": "1.1.0",
+      "category": "productivity",
+      "keywords": ["redmine", "release-report", "skills", "planning"]
+    }
+  ]
+}

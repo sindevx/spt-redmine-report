@@ -21,20 +21,25 @@ The skill **never creates or updates Redmine issues by itself**. It writes files
 
 ## Install
 
-**Per-tool steps (Claude Code / Cursor / Codex):** see **[docs/INSTALL.md](docs/INSTALL.md)**.
+**Full options (marketplace, `npx skills`, clone):** **[docs/INSTALL.md](docs/INSTALL.md)**.
 
-All three on one machine:
+Easiest for most people:
 
 ```bash
-git clone https://github.com/sindevx/spt-redmine-report.git ~/.agents/skills/redmine-report
-~/.agents/skills/redmine-report/scripts/install.sh --all
+npx skills add sindevx/spt-redmine-report -g -a claude-code -a cursor -a codex -y
 ```
 
-| Tool | Install flag | How you start setup |
-|---|---|---|
-| Claude Code | `--claude` | `/setup-spt-redmine-report` |
-| Cursor | `--cursor` | `/setup-spt-redmine-report` (new Agent chat) |
-| Codex | `--codex` | `$redmine-report` or ask `setup-spt-redmine-report` |
+Then run `scripts/install.sh --all` from the installed skill folder (see INSTALL.md), and in chat:
+
+```text
+/setup-spt-redmine-report
+```
+
+| Tool | Also easy |
+|---|---|
+| Claude Code | `/plugin marketplace add sindevx/spt-redmine-report` → install plugin |
+| Cursor | Customize → From GitHub → this repo |
+| Codex | `$skill-installer` or `npx skills add … -a codex` |
 
 `local.md` is personal and git-ignored. Do not commit it.
 
@@ -148,7 +153,10 @@ Aim for `RESULT: PASS`. Fix every `ERROR`. Read every `WARN`.
 |---|---|
 | `SKILL.md` | Instructions the agent follows |
 | `USER_GUIDE.md` | This guide (humans) |
-| `docs/INSTALL.md` | Install for Claude Code, Cursor, Codex |
+| `docs/INSTALL.md` | Install: npx skills, marketplace, clone |
+| `.claude-plugin/` | Claude Code marketplace + plugin manifests |
+| `.cursor-plugin/` | Cursor plugin / marketplace manifests |
+| `skills/redmine-report` | Skill entry for plugin discovery |
 | `commands/setup-spt-redmine-report.md` | Slash command source (`/setup-spt-redmine-report`) |
 | `scripts/install.sh` | `--claude` / `--cursor` / `--codex` / `--all` |
 | `local.example.md` | Template for your `local.md` |

@@ -31,13 +31,16 @@ scan '\bCGS\b' 'vendor codename'
 scan 'CoreBankService' 'internal label'
 scan 'redmine_dev' 'personal MCP default'
 scan 'mcp__redmin' 'personal MCP tool prefix'
-# Official clone URL may mention the GitHub owner; block other personal identity strings.
+# Official clone/marketplace URL may mention the GitHub owner; block other personal identity strings.
 scan 'sinkerd' 'personal identity'
-if grep -nEi 'sindevx' README.md USER_GUIDE.md LICENSE SKILL.md references/*.md scripts/*.py 2>/dev/null \
-  | grep -viE 'github\.com/sindevx/spt-redmine-report' >/dev/null 2>&1; then
-  echo "FAIL [personal identity]: sindevx outside official repo URL"
-  grep -nEi 'sindevx' README.md USER_GUIDE.md LICENSE SKILL.md references/*.md scripts/*.py 2>/dev/null \
-    | grep -viE 'github\.com/sindevx/spt-redmine-report' || true
+# Allow: github.com/sindevx/spt-redmine-report, marketplace add sindevx/spt-redmine-report, owner url github.com/sindevx
+if grep -nEi 'sindevx' README.md USER_GUIDE.md LICENSE SKILL.md docs/*.md references/*.md scripts/*.py \
+  .claude-plugin/*.json .cursor-plugin/*.json 2>/dev/null \
+  | grep -viE 'sindevx/spt-redmine-report|github\.com/sindevx(["/]|$)|"name": "sindevx"' >/dev/null 2>&1; then
+  echo "FAIL [personal identity]: sindevx outside allowed marketplace/repo references"
+  grep -nEi 'sindevx' README.md USER_GUIDE.md LICENSE SKILL.md docs/*.md references/*.md scripts/*.py \
+    .claude-plugin/*.json .cursor-plugin/*.json 2>/dev/null \
+    | grep -viE 'sindevx/spt-redmine-report|github\.com/sindevx(["/]|$)|"name": "sindevx"' || true
   fail=1
 fi
 scan 'Posting Queue' 'internal project name'
@@ -76,6 +79,22 @@ if ! grep -q 'Claude Code' docs/INSTALL.md || ! grep -q 'Cursor' docs/INSTALL.md
 fi
 if ! grep -q -- '--all' scripts/install.sh; then
   echo "FAIL: scripts/install.sh must support --all"
+  fail=1
+fi
+if [[ ! -f .claude-plugin/marketplace.json || ! -f .claude-plugin/plugin.json ]]; then
+  echo "FAIL: missing .claude-plugin marketplace/plugin manifests"
+  fail=1
+fi
+if [[ ! -f .cursor-plugin/plugin.json ]]; then
+  echo "FAIL: missing .cursor-plugin/plugin.json"
+  fail=1
+fi
+if [[ ! -L skills/redmine-report ]] && [[ ! -f skills/redmine-report/SKILL.md ]]; then
+  echo "FAIL: skills/redmine-report must exist for plugin skill discovery"
+  fail=1
+fi
+if ! grep -q 'npx skills add' docs/INSTALL.md || ! grep -q '/plugin marketplace add' docs/INSTALL.md; then
+  echo "FAIL: docs/INSTALL.md must document npx skills and Claude marketplace"
   fail=1
 fi
 if [[ -d profiles ]]; then

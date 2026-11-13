@@ -1,46 +1,175 @@
-# Install — Claude Code, Cursor, Codex
-
-One skill folder. Three agents. Pick your tool below, then run **one-time setup**.
+# Install — easiest first
 
 Repo: https://github.com/sindevx/spt-redmine-report  
-Skill folder name must stay `redmine-report` (matches `name` in `SKILL.md`).
+After any install method, run **one-time setup**: `/setup-spt-redmine-report`
 
 ---
 
-## Quick path (all three on one machine)
+## 1. Easiest — `npx skills` (Claude Code · Cursor · Codex)
+
+Needs Node.js. Installs the skill into the right agent folders for you.
+
+**All three agents, global (every project):**
+
+```bash
+npx skills add sindevx/spt-redmine-report -g -a claude-code -a cursor -a codex -y
+```
+
+**This project only:**
+
+```bash
+cd /path/to/your-repo
+npx skills add sindevx/spt-redmine-report -a claude-code -a cursor -a codex -y
+```
+
+**One agent only** (examples):
+
+```bash
+npx skills add sindevx/spt-redmine-report -g -a claude-code -y
+npx skills add sindevx/spt-redmine-report -g -a cursor -y
+npx skills add sindevx/spt-redmine-report -g -a codex -y
+```
+
+Then wire the setup slash command + `local.md`:
+
+```bash
+# path may be ~/.claude/skills/redmine-report or ~/.agents/skills/redmine-report or ~/.cursor/skills/redmine-report
+~/.agents/skills/redmine-report/scripts/install.sh --all
+# if that path missing, try:
+~/.claude/skills/redmine-report/scripts/install.sh --all
+~/.cursor/skills/redmine-report/scripts/install.sh --all
+```
+
+In chat:
+
+```text
+/setup-spt-redmine-report
+```
+
+List skills in a repo without installing: `npx skills add sindevx/spt-redmine-report --list`
+
+---
+
+## 2. Claude Code — plugin marketplace
+
+Inside Claude Code:
+
+```text
+/plugin marketplace add sindevx/spt-redmine-report
+/plugin install spt-redmine-report@spt-redmine-report
+```
+
+Or one shot (Claude Code v2.1.275+):
+
+```text
+/plugin install spt-redmine-report --marketplace sindevx/spt-redmine-report
+```
+
+From a normal shell:
+
+```bash
+claude plugin marketplace add sindevx/spt-redmine-report
+claude plugin install spt-redmine-report@spt-redmine-report
+```
+
+Then:
+
+```text
+/reload-skills
+/setup-spt-redmine-report
+```
+
+Update later: `/plugin marketplace update spt-redmine-report`
+
+---
+
+## 3. Cursor — plugin / marketplace
+
+### A. From GitHub (Customize)
+
+1. Open **Customize**
+2. Import plugin **From GitHub Repository**
+3. Paste: `https://github.com/sindevx/spt-redmine-report`
+4. Install **spt-redmine-report**
+5. New Agent chat → `/setup-spt-redmine-report`
+
+### B. Official Cursor Marketplace (after listing)
+
+When the repo is listed on [cursor.com/marketplace](https://cursor.com/marketplace):
+
+1. **Customize →** search `spt-redmine-report` / Redmine
+2. Install → new Agent chat → `/setup-spt-redmine-report`
+
+Authors: submit at [cursor.com/marketplace/publish](https://cursor.com/marketplace/publish) (manual review). Manifests already ship in `.cursor-plugin/`.
+
+### C. Local test before publish
+
+```bash
+mkdir -p ~/.cursor/plugins/local/spt-redmine-report
+# copy or clone repo contents into that folder (must include .cursor-plugin/plugin.json)
+# Developer: Reload Window → Customize → confirm plugin
+```
+
+### D. Still fine: `npx skills` (section 1) or personal skills folder
+
+```bash
+npx skills add sindevx/spt-redmine-report -g -a cursor -y
+```
+
+---
+
+## 4. Codex — skill installer / skills path
+
+```text
+$skill-installer install https://github.com/sindevx/spt-redmine-report
+```
+
+Or:
+
+```bash
+npx skills add sindevx/spt-redmine-report -g -a codex -y
+```
+
+Use:
+
+```text
+$redmine-report
+```
+
+Ask: `setup-spt-redmine-report` if `$` menu has no setup command.
+
+---
+
+## 5. Manual clone (fallback)
 
 ```bash
 git clone https://github.com/sindevx/spt-redmine-report.git ~/.agents/skills/redmine-report
 ~/.agents/skills/redmine-report/scripts/install.sh --all
 ```
 
-What `--all` does:
+| Tool | Flag | Skills path |
+|---|---|---|
+| Claude Code | `--claude` | `~/.claude/skills/redmine-report` |
+| Cursor | `--cursor` | `~/.cursor/skills/` (+ `~/.agents/skills/`) |
+| Codex | `--codex` | `~/.agents/skills/redmine-report` |
+| All | `--all` | symlinks + setup command |
 
-1. Keeps the skill under `~/.agents/skills/redmine-report` (Codex + Cursor read this)
-2. Symlinks the same folder into `~/.claude/skills/` and `~/.cursor/skills/`
-3. Installs `/setup-spt-redmine-report` into Claude and Cursor command dirs
-4. Creates `local.md` if missing
+Project-scoped Claude/Cursor: add `--project` while inside the git repo.
 
-Then in any agent chat:
-
-```text
-/setup-spt-redmine-report
-```
-
-Codex: type `$redmine-report` for the skill, or ask to run setup (`setup-spt-redmine-report` / `reset`).
+Details and troubleshooting for clone installs: sections below.
 
 ---
 
-## Claude Code
+## Claude Code — clone / project (manual detail)
 
-### Personal (every project on this machine)
+### Personal
 
 ```bash
 git clone https://github.com/sindevx/spt-redmine-report.git ~/.claude/skills/redmine-report
 ~/.claude/skills/redmine-report/scripts/install.sh --claude
 ```
 
-### Project (shared with the repo)
+### Project
 
 ```bash
 cd /path/to/your-repo
@@ -49,152 +178,66 @@ git clone https://github.com/sindevx/spt-redmine-report.git .claude/skills/redmi
 .claude/skills/redmine-report/scripts/install.sh --claude --project
 ```
 
-`--project` installs the setup command into `.claude/commands/` in the repo (commit that file if the team should share it). `local.md` stays personal — it is git-ignored inside the skill folder; for project installs prefer a user-level `local.md` via symlink or run setup once per machine.
-
-### Check
-
-```text
-/skills
-/setup-spt-redmine-report
-```
-
-If the skill was added mid-session and does not appear: `/reload-skills`.
-
-### Use
-
-```text
-/setup-spt-redmine-report
-make a redmine report for this release
-```
+Check: `/skills` · `/setup-spt-redmine-report` · mid-session → `/reload-skills`
 
 ---
 
-## Cursor
-
-Cursor loads skills from (among others):
-
-| Scope | Path |
-|---|---|
-| Personal | `~/.cursor/skills/` or `~/.agents/skills/` |
-| Project | `.cursor/skills/` or `.agents/skills/` |
-| Compatibility | also `~/.claude/skills/` |
-
-### Personal
+## Cursor — clone detail
 
 ```bash
 git clone https://github.com/sindevx/spt-redmine-report.git ~/.cursor/skills/redmine-report
 ~/.cursor/skills/redmine-report/scripts/install.sh --cursor
 ```
 
-Or use the shared agents path (good if you also use Codex):
+Project:
 
 ```bash
-git clone https://github.com/sindevx/spt-redmine-report.git ~/.agents/skills/redmine-report
-~/.agents/skills/redmine-report/scripts/install.sh --cursor
-```
-
-### Project
-
-```bash
-cd /path/to/your-repo
 mkdir -p .cursor/skills
 git clone https://github.com/sindevx/spt-redmine-report.git .cursor/skills/redmine-report
-.cursor/skills/redmine-report/scripts/install.sh --cursor --project
 ```
 
-### Check
+Start a **new** Agent chat. Confirm under **Customize → Skills**.
 
-1. Start a **new** Agent chat (skills are discovered at session start)
-2. Open **Customize → Skills** and confirm `redmine-report`
-3. Type `/` and pick `setup-spt-redmine-report`, or type:
-
-```text
-/setup-spt-redmine-report
-```
-
-Cloud Agents do not see laptop-only `~/.cursor/skills/` unless you sync personal skills or put the skill under the repo’s `.cursor/skills/`.
+Cloud Agents: prefer project `.cursor/skills/` or sync personal skills in Settings.
 
 ---
 
-## Codex (OpenAI)
-
-Codex loads:
-
-| Scope | Path |
-|---|---|
-| Personal | `~/.agents/skills/` |
-| Project | `.agents/skills/` (from CWD up to repo root) |
-
-Legacy `~/.codex/skills/` may still be read; prefer `~/.agents/skills/`.
-
-### Personal
+## Codex — clone detail
 
 ```bash
 git clone https://github.com/sindevx/spt-redmine-report.git ~/.agents/skills/redmine-report
 ~/.agents/skills/redmine-report/scripts/install.sh --codex
 ```
 
-### Project
-
-```bash
-cd /path/to/your-repo
-mkdir -p .agents/skills
-git clone https://github.com/sindevx/spt-redmine-report.git .agents/skills/redmine-report
-.agents/skills/redmine-report/scripts/install.sh --codex
-```
-
-### Check / use
-
-```text
-$redmine-report
-```
-
-Or ask in plain language: `run setup for spt-redmine-report`.
-
-Codex has no Claude-style `/setup-...` menu by default. Setup is still the same flow: the skill writes `local.md` when you ask for `/setup-spt-redmine-report` or `setup-spt-redmine-report`.
-
-Optional curated installer (if available in your Codex build):
-
-```text
-$skill-installer install https://github.com/sindevx/spt-redmine-report
-```
-
-Then move/rename the folder to `redmine-report` if the installer used another name, and run `scripts/install.sh --codex`.
+Project: `.agents/skills/redmine-report`
 
 ---
 
-## After install (all tools)
+## After install (all methods)
 
-1. Run setup once:
+1. `/setup-spt-redmine-report` (or Codex equivalent)
+2. Pick Mode: `report-only` | `mcp` | `manual`
+3. Read Setup summary
+4. Then ask for a Redmine report
 
-```text
-/setup-spt-redmine-report
-```
-
-2. Pick Mode: `report-only` (safe default), `mcp`, or `manual`
-3. Read the **Setup summary** the agent prints (also stored in `local.md`)
-4. Only then ask for a Redmine report
-
-Reset:
-
-```text
-/setup-spt-redmine-report reset
-```
+Reset: `/setup-spt-redmine-report reset`
 
 ---
 
 ## Update
 
-```bash
-# wherever you cloned it
-cd ~/.agents/skills/redmine-report   # or ~/.claude/skills/... or ~/.cursor/skills/...
-git pull
-./scripts/install.sh --all           # refresh slash command copies
-```
+| Method | Update |
+|---|---|
+| `npx skills` | `npx skills update` (when available) or re-run `npx skills add … -y` |
+| Claude marketplace | `/plugin marketplace update spt-redmine-report` |
+| Cursor plugin | Update from Customize / re-import |
+| git clone | `git pull` then `./scripts/install.sh --all` |
 
 ---
 
 ## Uninstall
+
+Remove skill folders and setup command:
 
 ```bash
 rm -rf ~/.agents/skills/redmine-report
@@ -204,7 +247,8 @@ rm -f ~/.claude/commands/setup-spt-redmine-report.md
 rm -f ~/.cursor/commands/setup-spt-redmine-report.md
 ```
 
-Remove project copies under `.claude/skills/`, `.cursor/skills/`, or `.agents/skills/` if you added those.
+Claude plugin: `/plugin uninstall spt-redmine-report@spt-redmine-report`  
+Cursor: remove from Customize → Skills / Plugins.
 
 ---
 
@@ -212,11 +256,10 @@ Remove project copies under `.claude/skills/`, `.cursor/skills/`, or `.agents/sk
 
 | Mistake | Fix |
 |---|---|
-| Extra nesting (`.../spt-redmine-report/redmine-report/SKILL.md`) | `SKILL.md` must be directly inside `.../redmine-report/` |
-| Wrong folder name | Must be `redmine-report`, not `spt-redmine-report` |
-| Cursor chat already open | Start a new Agent chat after install |
-| Claude mid-session | `/reload-skills` |
-| Setup never run | `/setup-spt-redmine-report` before any report |
-| Expecting Redmine writes from the skill | Drafts only; push is a separate companion step |
+| Extra nesting (`…/redmine-report/redmine-report/SKILL.md`) | `SKILL.md` must sit directly in the skill folder |
+| Folder named `spt-redmine-report` under skills/ | Prefer folder name `redmine-report` (matches skill `name`) |
+| Cursor chat already open | New Agent chat after install |
+| Setup never run | `/setup-spt-redmine-report` |
+| Expecting Redmine writes from the skill | Drafts only |
 
-More usage detail: [USER_GUIDE.md](../USER_GUIDE.md).
+Usage: [USER_GUIDE.md](../USER_GUIDE.md)
