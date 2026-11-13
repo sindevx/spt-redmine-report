@@ -14,19 +14,27 @@ The skill **never creates or updates Redmine issues by itself**. It writes files
 
 ## Requirements
 
-- Claude Code (or a runtime that loads skills from `~/.claude/skills/` or `~/.agents/skills/`)
+- One of: **Claude Code**, **Cursor**, or **Codex**
 - Git repo with the work you are reporting
 - Python 3 (for the report checker)
 - Optional: a Redmine MCP server on your machine (only if Mode is `mcp`)
 
 ## Install
 
+**Per-tool steps (Claude Code / Cursor / Codex):** see **[docs/INSTALL.md](docs/INSTALL.md)**.
+
+All three on one machine:
+
 ```bash
-git clone https://github.com/sindevx/spt-redmine-report.git ~/.claude/skills/redmine-report
-~/.claude/skills/redmine-report/scripts/install.sh
+git clone https://github.com/sindevx/spt-redmine-report.git ~/.agents/skills/redmine-report
+~/.agents/skills/redmine-report/scripts/install.sh --all
 ```
 
-`install.sh` installs the slash command and creates `local.md` if missing.
+| Tool | Install flag | How you start setup |
+|---|---|---|
+| Claude Code | `--claude` | `/setup-spt-redmine-report` |
+| Cursor | `--cursor` | `/setup-spt-redmine-report` (new Agent chat) |
+| Codex | `--codex` | `$redmine-report` or ask `setup-spt-redmine-report` |
 
 `local.md` is personal and git-ignored. Do not commit it.
 
@@ -140,8 +148,9 @@ Aim for `RESULT: PASS`. Fix every `ERROR`. Read every `WARN`.
 |---|---|
 | `SKILL.md` | Instructions the agent follows |
 | `USER_GUIDE.md` | This guide (humans) |
+| `docs/INSTALL.md` | Install for Claude Code, Cursor, Codex |
 | `commands/setup-spt-redmine-report.md` | Slash command source (`/setup-spt-redmine-report`) |
-| `scripts/install.sh` | Installs the slash command + `local.md` |
+| `scripts/install.sh` | `--claude` / `--cursor` / `--codex` / `--all` |
 | `local.example.md` | Template for your `local.md` |
 | `references/full-rules.md` | Detailed rules (loaded on demand) |
 | `scripts/check_report.py` | Validates the report table |

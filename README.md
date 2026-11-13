@@ -1,67 +1,54 @@
-# redmine-report
+# redmine-report (spt-redmine-report)
 
-A Claude Code skill that turns finished git commits, a release diff, or a feature branch into a Redmine-ready report — business-level story/epic description plus technical subtasks, with real dates and hour estimates from evidence (code, tests, owner hours).
+Turns finished git work into a **Redmine-ready draft report** (story + life-cycle tasks).  
+**Never writes to Redmine** — you review files first; push is optional and separate.
 
-**Never writes to Redmine.** Draft files only. Push is a separate step when a companion skill and Mode `mcp` are configured.
+## Install (Claude Code · Cursor · Codex)
 
-**Human walkthrough:** [USER_GUIDE.md](USER_GUIDE.md) (install, one-time setup, everyday use, troubleshooting).
+**Full guide (pick your tool):** [docs/INSTALL.md](docs/INSTALL.md)
 
-## Install
+### Fastest — all tools on this machine
 
 ```bash
-git clone https://github.com/sindevx/spt-redmine-report.git ~/.claude/skills/redmine-report
-~/.claude/skills/redmine-report/scripts/install.sh
+git clone https://github.com/sindevx/spt-redmine-report.git ~/.agents/skills/redmine-report
+~/.agents/skills/redmine-report/scripts/install.sh --all
 ```
 
-`install.sh` copies the slash command into `~/.claude/commands/` (and `~/.cursor/commands/` when present) and creates `local.md` from the example if missing.
-
-Works with runtimes that read `~/.claude/skills/` (or `~/.agents/skills/`).
-
-## Setup (once)
-
-In chat:
+Then in chat:
 
 ```text
 /setup-spt-redmine-report
 ```
 
-Reset later:
+| Tool | Personal skills path | After install |
+|---|---|---|
+| **Claude Code** | `~/.claude/skills/redmine-report` | `/setup-spt-redmine-report` · `/skills` |
+| **Cursor** | `~/.cursor/skills/` or `~/.agents/skills/` | `/setup-spt-redmine-report` · Customize → Skills |
+| **Codex** | `~/.agents/skills/redmine-report` | `$redmine-report` or ask for setup |
 
-```text
-/setup-spt-redmine-report reset
-```
-
-| Mode | Behaviour |
-|---|---|
-| `report-only` | Default for new installs. Draft files only. No Redmine calls. |
-| `mcp` | Owner picks a Redmine MCP name from namespaces on this machine. Skill probes and stores trackers, statuses, priorities, activities. |
-| `manual` | No MCP. Owner pastes tracker/status names once into `local.md`. |
-
-`local.md` is git-ignored. It holds everything instance-specific.
+One tool only? See [docs/INSTALL.md](docs/INSTALL.md) for `--claude`, `--cursor`, `--codex`, and project-scoped installs.
 
 ## What it does
 
-1. One-time setup → `local.md` + setup summary  
-2. Per-report questions (scope, parent, hours, shape)  
-3. Read code and evidence  
+1. **One-time setup** → `local.md` + Setup summary (Mode, MCP, trackers…)  
+2. Per-report questions  
+3. Read code/evidence  
 4. Life-cycle tasks: Analysis → Design → Implement → Test → UAT → Production  
 5. Write `.scratch/<feature>/redmine-report.md` + `redmine-report-notes.md`  
-6. Run `scripts/check_report.py` until `RESULT: PASS`  
+6. `scripts/check_report.py` until `RESULT: PASS`  
 7. Owner review; optional companion push when Mode is `mcp`
 
-See `SKILL.md`. Detail: `references/full-rules.md`.
+Human walkthrough: [USER_GUIDE.md](USER_GUIDE.md) · Agent rules: `SKILL.md`
 
 ## Why
 
-Redmine has no built-in Epic/Story/Task levels like Jira — `tracker` is a label; hierarchy is `parent_issue_id`. Tracker names differ per instance. This skill records the real map during setup instead of assuming one.
+Redmine has no built-in Epic/Story/Task levels like Jira — hierarchy is `parent_issue_id`. Tracker names differ per instance. Setup records **your** map instead of baking one in.
 
 ## Develop
 
 ```bash
 ./tools/check.sh
 ```
-
-Fails if shipped files contain personal machine names, org names, or other secrets-shaped strings that belong only in `local.md`.
 
 ## License
 

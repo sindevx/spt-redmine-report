@@ -66,6 +66,18 @@ if ! grep -q '/setup-spt-redmine-report' SKILL.md USER_GUIDE.md README.md; then
   echo "FAIL: docs must mention /setup-spt-redmine-report"
   fail=1
 fi
+if [[ ! -f docs/INSTALL.md ]]; then
+  echo "FAIL: missing docs/INSTALL.md"
+  fail=1
+fi
+if ! grep -q 'Claude Code' docs/INSTALL.md || ! grep -q 'Cursor' docs/INSTALL.md || ! grep -q 'Codex' docs/INSTALL.md; then
+  echo "FAIL: docs/INSTALL.md must cover Claude Code, Cursor, and Codex"
+  fail=1
+fi
+if ! grep -q -- '--all' scripts/install.sh; then
+  echo "FAIL: scripts/install.sh must support --all"
+  fail=1
+fi
 if [[ -d profiles ]]; then
   echo "FAIL: profiles/ must not ship (use local.md only)"
   fail=1
