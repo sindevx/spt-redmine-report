@@ -1,86 +1,93 @@
 ---
-name: redmine-release-report
-description: Use when asked to turn finished git commits, a release diff, or a feature branch into a Redmine report, story, epic, or task breakdown — before creating or estimating Redmine issues for completed development work.
+name: redmine-report
+description: This skill should be used when the user asks to prepare a Redmine report, story, epic, or task breakdown from finished work (git commits, a feature branch, a release diff, or a vendor API document) before any Redmine push. Writes two draft files and checks them. Never writes to Redmine; pushing is a separate companion step afterwards.
 ---
 
 # Redmine Release Report
 
-## Overview
-Turns real git history (commits, diffs, dates) into a Redmine-ready report: business-level story/epic description plus technical subtasks with hours and dates. Never invents scope — always confirms against what the user's Redmine instance and any boss-assigned issue actually say.
+Prepare a Redmine report a manager can read and the owner can approve. The report is ready when the checker prints `RESULT: PASS` and the owner has answered every open question.
 
-## When to Use
-- "make a redmine report for this release"
-- "write story/task for what we just shipped"
-- "how do I file this in redmine, what levels (epic/story/task)"
+Detail for every rule below: `references/full-rules.md`. Read only the part needed; do not load it whole.
 
-Not for auto-creating issues by default — this skill produces a report. Pushing to Redmine is a separate step the user must explicitly ask for.
+## Step 0. One-time setup (before any report)
 
-## Step 0 — Ask before touching git or Redmine
+Done when `local.md` exists, `Setup completed` has a date, and `Setup summary` is non-empty. If setup is incomplete: copy `local.example.md` → `local.md` if missing, run the block below once, probe what can be probed, write every discovered value into `local.md`, show the setup summary to the owner, then stop for confirmation if anything is still blank.
 
-Present these as a table, not a prose list:
+Never invent an MCP server name. Never bake instance ids into this skill. Only `local.md` holds machine-specific values.
 
-| # | Question | Options |
-|---|----------|---------|
-| 1 | Scope | Whole release (many commits/features bundled) / One dev section (single feature or task) |
-| 2 | Existing parent issue | Yes — give issue id (fetch its real subject/description/acceptance criteria via Redmine MCP if available, then build only the subtasks that fit under it — don't duplicate the story) / No — build the story/epic from scratch |
+### Ask once
 
-Ask both before running any git or Redmine command. Skipping this and guessing scope, or re-deriving a story that already exists, is the most common failure — verified: an earlier run of this exact task drafted full stories before asking, and had to redo the breakdown once scope and an assigned-issue question came up.
+1. Mode: `mcp` | `report-only` | `manual`? (new install default: `report-only`)
+2. If `mcp`: list Redmine-related MCP namespaces on this machine; owner picks one name. Empty name not allowed.
+3. Default project (id or name), or "ask each report".
+4. Test command for this repo (`none` or the real command).
+5. Custom fields needed on tickets? (`none` or name each).
+6. Optional: sibling issue id for title/hours style.
 
-## Step 1 — Find the commit range
+### Probe and save (same session)
 
-Fallback chain, in order:
-1. Latest git tag → HEAD (`git tag --list`, `git log <tag>..HEAD`)
-2. No tags: latest merge commit whose message contains "release"
-3. Neither found: ask the user for the exact start/end ref — never guess a range
-
-## Step 2 — Read every commit for real, classify by purpose
-
-`git log <range> --oneline --no-merges`, then `git show --stat` (full diff for anything non-trivial) per commit. Classify:
-- **feature** — new capability
-- **bug** — fixes wrong behavior; flag `production risk` if it touches prod config, a data type, or security
-- **chore/build** — tooling only, no runtime behavior change
-- **docs** — exclude from the story list entirely (people reading Redmine don't read code; doc-only commits carry no story value)
-
-A commit that matches none of these (no clear intent, no conventional-commit prefix) does not get force-classified — list it under "needs manual review" at the end instead of guessing.
-
-## Step 3 — Write records at two altitudes, never mixed
-
-- **Story/Epic description** — business language only: what the user/partner/ops gets and why it matters. No method names, class names, or file paths.
-- **Subtask description** — technical detail: which layer changed, what validation rule, what was tested.
-
-Anything touching production config, credentials, or auth gets Priority=High plus a one-line risk note.
-
-Never copy raw diff text or config values into a description — passwords, tokens, connection strings show up in real diffs (verified in this kind of repo's own `application-*.properties` files). Summarize the change; never paste the literal secret value.
-
-## Step 4 — Dates and hours
-
-- **Start Date** = earliest evidence: a design doc's own date if one exists, else commit author date (`git show -s --format=%ai <hash>`)
-- **Due/Finish Date** = commit date for already-done work; for "build & UAT" / "deploy production" keep Due after Start and note production is gated on UAT sign-off
-- **Est. Hours** = best-effort per subtask, always labeled an estimate — git has no time log; tell the user to adjust to actual spent hours before entering into Redmine
-
-Always split **build & UAT** and **deploy production** into separate subtasks, production explicitly gated on UAT passing. Never one combined "deploy" line.
-
-## Step 5 — Match the user's Redmine, don't assume Jira-style levels
-
-Redmine has no built-in Epic/Story/Task hierarchy — `tracker` is just a type label; the real hierarchy is `parent_issue_id`, settable on any tracker regardless of name. Don't assume an "Epic" tracker exists.
-
-- Redmine MCP available → call `/trackers.json` and `/versions.json` for real, propose a mapping (e.g. "this instance has no Epic tracker, use `parent_issue_id` under UserStory/Task instead"), get the user to confirm it
-- No MCP → ask the user what their tracker names are; never hardcode one instance's tracker names/ids into a report meant for someone else's Redmine
-
-## Output format
-
-One table, one row per record: `ID | Tracker | Parent | Subject | Description | Priority | Est. Hours | Start Date | Due/Finish Date | Status | Source`. `Source` = commit hash or design-doc path, so every row traces to real evidence. State the total record count up top, e.g. "12 records: 1 Story + 8 Subtask + 2 Bug + 1 Task".
-
-Report only — never call a Redmine write endpoint unless the user explicitly asks for auto-creation in that conversation.
-
-## Common Mistakes
-
-| Mistake | Fix |
+| Mode | Probe |
 |---|---|
-| Assuming Epic/Story/Task exists in Redmine | Check `/trackers.json` first, or ask |
-| Story description has class/method names | Business language for story; technical detail only in subtasks |
-| Building a new story when one is already assigned | Ask Step 0 first, every time |
-| Pasting raw config diff (passwords, tokens) into a report | Summarize the change, redact the value |
-| One combined "deploy" task | Split UAT and production; production gated on UAT |
-| Guessing the commit range | Tag → release-merge commit → ask, in that order |
-| Force-classifying every commit into feature/bug/chore | Unclear commits go to "needs manual review" |
+| `mcp` | Read-only: trackers, issue statuses, priorities, time-entry activities, versions for the default project when known. On failure: stay in setup; offer `report-only` or fix auth. |
+| `manual` | Owner pastes tracker and status names (and ids if known). |
+| `report-only` | Skip live Redmine; still save Mode, test command, custom-field choice, preferences. |
+
+Write into `local.md`: Trackers, Statuses, Priorities, Activities, Done status, New status, Hierarchy note, Custom fields, Setup completed (today), and a **Setup summary** of 5–10 plain lines the owner can re-read later (server/mode, project, tracker list, status list, custom fields, test command). Show that summary in chat once. Later reports read `local.md` and do not re-ask setup unless the owner says `reset redmine-report setup`.
+
+If a companion task skill is installed, keep the MCP server name identical in both local configs.
+
+## Step 1. Ask once per report
+
+Send this block in one message and wait. Defaults from `local.md` count only if the owner says "default".
+
+1. Story id and parent id (if any). Server/MCP from `local.md` — do not re-ask unless the owner overrides for this run.
+2. What was the work? One sentence from the owner.
+3. Day the vendor document or request arrived (if any), and real hours for analysis/design with no commit.
+4. Flat tasks with a Phase column, or task groups like a sibling story?
+5. Assignee (default from `local.md`, else the owner) and any custom-field values required by `local.md`.
+6. Does this change something already in production? (yes = add a Review & Production Impact story)
+
+## Step 2. Read the evidence
+
+Done when each task row has at least one piece of evidence in the notes file.
+- Code: entry points, checks, response mapping, tests. Commit messages are claims; current code is proof.
+- Vendor document: find in repo (path hint from `local.md` if set), list endpoints/scenarios; that list becomes the UAT checklist.
+- Sibling story (read-only GET) only when Mode is `mcp` and an id is known.
+- Dates from the repo, not from `git log` alone: dated file names, dates in code/tests/ADRs, saved API responses. Working days only; tasks in order.
+
+## Step 3. Shape tasks in life-cycle order
+
+Done when Phase runs: Analysis, Design, Implement (one task per endpoint or business function), Test, UAT, Production.
+- Analysis/design may have no commit — mark "owner confirms", use hours from Step 1.
+- UAT and Production start as New; description starts with `Plan:`. Production waits on UAT sign-off.
+- One task = one real activity. Size follows the diff and sibling style. Small task: 0.25h or 0.5h. Total equals story hours.
+
+## Step 4. Write two files
+
+Done when both exist under `.scratch/<feature>/`. Nothing from the notes file goes to Redmine.
+- `redmine-report.md` (sent): story text, one table, open questions, push order.
+  Columns: `ID | Tracker | Subject | Description | Priority | Status | Done % | Est. h | Spent h* | Start | Due` (+ custom-field columns only when `local.md` defines them).
+- `redmine-report-notes.md` (not sent): evidence, flow, endpoints, size evidence, date sources, tests, risks, vendor scenarios.
+- Business words only. Subject starts with an action verb. Description 1–3 plain past-tense lines. No class names, hashes, or file paths in the sent file.
+- Spent h* is a proposal ≤ estimate (often 0.5–1.0×). Identical spent on every row looks fake. Owner confirms before any time entry.
+
+## Step 5. Run the checker
+
+```
+python3 ~/.claude/skills/redmine-report/scripts/check_report.py .scratch/<feature>/redmine-report.md --story-hours <hours>
+```
+
+Done on `RESULT: PASS`. Fix every `ERROR`; read every `WARN`.
+- No task marked Closed until the test command from `local.md` has run (or owner accepts skip). Record the real result in the notes file.
+
+## Step 6. Review with the owner
+
+Short summary + file path in chat, not the whole payload. Done when open questions are answered.
+- `report-only` / `manual`: stop after file approval.
+- `mcp` + companion push skill: hand off for review → plain `confirm` → push → read back.
+- Redmine calls alone in a response — never batched with a shell call that a hook may rewrite.
+- This skill never POST/PUT to Redmine.
+
+## Learn from problems
+
+Fix the report first, then patch the matching rule in this skill (replace the old line; do not stack a duplicate). Optional short note under Preferences in `local.md`.
