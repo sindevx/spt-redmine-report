@@ -7,7 +7,7 @@ description: This skill should be used when the user asks to prepare a Redmine r
 
 Prepare a Redmine report a manager can read and the owner can approve. The report is ready when the checker prints `RESULT: PASS` and the owner has answered every open question.
 
-Detail for every rule below: `references/full-rules.md`. Read only the part needed; do not load it whole.
+Detail for every rule below: `references/full-rules.md`. Read only the part needed; do not load it whole. Human install and usage: `USER_GUIDE.md` — point the owner there when they ask how to install, set up, or reset.
 
 ## Step 0. One-time setup (before any report)
 

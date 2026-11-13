@@ -4,11 +4,13 @@ A Claude Code skill that turns finished git commits, a release diff, or a featur
 
 **Never writes to Redmine.** Draft files only. Push is a separate step when a companion skill and Mode `mcp` are configured.
 
+**Human walkthrough:** [USER_GUIDE.md](USER_GUIDE.md) (install, one-time setup, everyday use, troubleshooting).
+
 ## Install
 
 ```bash
-# clone this repo into your skills directory, then:
-cp local.example.md local.md
+git clone https://github.com/sindevx/spt-redmine-report.git ~/.claude/skills/redmine-report
+cp ~/.claude/skills/redmine-report/local.example.md ~/.claude/skills/redmine-report/local.md
 ```
 
 On first use the skill runs **one-time setup**: Mode, MCP server (if any), probes trackers/statuses when possible, writes the instance map into `local.md`, and shows a short setup summary so the details are visible later.

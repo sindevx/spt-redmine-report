@@ -31,7 +31,15 @@ scan '\bCGS\b' 'vendor codename'
 scan 'CoreBankService' 'internal label'
 scan 'redmine_dev' 'personal MCP default'
 scan 'mcp__redmin' 'personal MCP tool prefix'
-scan 'sindevx|sinkerd' 'personal identity'
+# Official clone URL may mention the GitHub owner; block other personal identity strings.
+scan 'sinkerd' 'personal identity'
+if grep -nEi 'sindevx' README.md USER_GUIDE.md LICENSE SKILL.md references/*.md scripts/*.py 2>/dev/null \
+  | grep -viE 'github\.com/sindevx/spt-redmine-report' >/dev/null 2>&1; then
+  echo "FAIL [personal identity]: sindevx outside official repo URL"
+  grep -nEi 'sindevx' README.md USER_GUIDE.md LICENSE SKILL.md references/*.md scripts/*.py 2>/dev/null \
+    | grep -viE 'github\.com/sindevx/spt-redmine-report' || true
+  fail=1
+fi
 scan 'Posting Queue' 'internal project name'
 scan 'profiles/ib|ib-defaults|Profile: ib' 'personal profile path'
 scan '\bMPAY\b|\bTXN\b' 'internal system codename'
@@ -40,6 +48,10 @@ scan 'MicroserviceRoutes|SUBURL' 'internal route vocabulary'
 
 if [[ ! -f local.example.md ]]; then
   echo "FAIL: missing local.example.md"
+  fail=1
+fi
+if [[ ! -f USER_GUIDE.md ]]; then
+  echo "FAIL: missing USER_GUIDE.md"
   fail=1
 fi
 if [[ -d profiles ]]; then
