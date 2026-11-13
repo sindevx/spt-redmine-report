@@ -29,13 +29,15 @@ git clone https://github.com/sindevx/spt-redmine-report.git ~/.agents/skills/red
 ~/.agents/skills/redmine-report/scripts/install.sh --all
 ```
 
-### Then set up once
+### Then use these `/` commands
 
-```text
-/setup-spt-redmine-report
-```
+| Command | Purpose |
+|---|---|
+| `/setup-spt-redmine-report` | One-time setup |
+| `/spt-redmine-report-prepare` | Evidence from docs / Postman / notes / Redmine (not code-only) |
+| `/spt-redmine-report` | Draft the Redmine report |
 
-Codex: `$redmine-report` or ask `setup-spt-redmine-report`.
+See [USER_GUIDE.md](USER_GUIDE.md) for flows and evidence sources.
 
 ## What it does
 

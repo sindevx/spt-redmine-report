@@ -1,21 +1,31 @@
 ---
 name: redmine-report
-description: This skill should be used when the user asks to prepare a Redmine report, story, epic, or task breakdown from finished work (git commits, a feature branch, a release diff, or a vendor API document) before any Redmine push. Also use when the user runs /setup-spt-redmine-report or asks to set up or reset spt-redmine-report. Writes two draft files and checks them. Never writes to Redmine; pushing is a separate companion step afterwards.
+description: This skill should be used when the user runs /spt-redmine-report, /spt-redmine-report-prepare, or /setup-spt-redmine-report, or asks to prepare a Redmine report, story, epic, or task breakdown from finished work. Evidence may come from vendor docs, Postman, Redmine issues, owner notes, specs, UAT logs, and code — not code alone. Writes draft files and checks them. Never writes to Redmine; pushing is a separate companion step afterwards.
 ---
 
 # Redmine Release Report
 
 Prepare a Redmine report a manager can read and the owner can approve. The report is ready when the checker prints `RESULT: PASS` and the owner has answered every open question.
 
-Detail for every rule below: `references/full-rules.md`. Read only the part needed; do not load it whole. Human install and usage: `USER_GUIDE.md` — point the owner there when they ask how to install, set up, or reset.
+Detail for every rule below: `references/full-rules.md`. Read only the part needed; do not load it whole. Human install, slash commands, and multi-source evidence: `USER_GUIDE.md`.
+
+## Slash commands
+
+| Command | Role |
+|---|---|
+| `/setup-spt-redmine-report` | One-time setup → `local.md` |
+| `/spt-redmine-report-prepare` | Evidence pack from docs/Postman/notes/Redmine — **code optional**. Follow `commands/spt-redmine-report-prepare.md` |
+| `/spt-redmine-report` | Full draft report. Follow `commands/spt-redmine-report.md` + steps below |
+
+If the user runs prepare, write the prepare file and stop unless they also ask for the report.
 
 ## Step 0. One-time setup (slash command)
 
-**Preferred entry:** user runs `/setup-spt-redmine-report` (optional arg `reset`). Follow `commands/setup-spt-redmine-report.md` exactly — setup only, no report draft.
+**Preferred entry:** `/setup-spt-redmine-report` (optional `reset`). Follow `commands/setup-spt-redmine-report.md` — setup only, no report draft.
 
 Done when `local.md` exists, `Setup completed` has a date, and `Setup summary` is non-empty.
 
-If the user asks for a report but setup is incomplete: **do not guess**. Tell them to run `/setup-spt-redmine-report` first (after `./scripts/install.sh` if the slash command is missing). Same for `reset redmine-report setup` → treat as `/setup-spt-redmine-report reset`.
+If the user asks for a report but setup is incomplete: **do not guess**. Tell them to run `/setup-spt-redmine-report` first (after `./scripts/install.sh` if slash commands are missing).
 
 Never invent an MCP server name. Never bake instance ids into this skill. Only `local.md` holds machine-specific values.
 
@@ -31,14 +41,19 @@ Send this block in one message and wait. Defaults from `local.md` count only if 
 4. Flat tasks with a Phase column, or task groups like a sibling story?
 5. Assignee (default from `local.md`, else the owner) and any custom-field values required by `local.md`.
 6. Does this change something already in production? (yes = add a Review & Production Impact story)
+7. Which evidence sources apply this time? (code / vendor doc / Postman / notes / Redmine sibling / UAT logs — multi-select). If a prepare pack exists under `.scratch/`, offer to use it.
 
-## Step 2. Read the evidence
+## Step 2. Read the evidence (multi-source — not code-only)
 
-Done when each task row has at least one piece of evidence in the notes file.
-- Code: entry points, checks, response mapping, tests. Commit messages are claims; current code is proof.
-- Vendor document: find in repo (path hint from `local.md` if set), list endpoints/scenarios; that list becomes the UAT checklist.
-- Sibling story (read-only GET) only when Mode is `mcp` and an id is known.
-- Dates from the repo, not from `git log` alone: dated file names, dates in code/tests/ADRs, saved API responses. Working days only; tasks in order.
+Done when each task row has at least one evidence line in the notes file. **Do not skip non-code sources** when the owner named them or a prepare pack exists.
+
+- **Prepare pack** (if `.scratch/<feature>/redmine-report-prepare.md` exists): treat it as primary input; extend with code only where needed.
+- **Code + tests:** entry points, checks, mapping. Commit messages are claims; current code is proof.
+- **Vendor / partner document or Postman:** list endpoints and scenarios → UAT checklist. Path hint from `local.md` or owner paste.
+- **Owner words:** analysis/design hours, arrival day, UAT results — required when there is no commit.
+- **Sibling / parent Redmine** (Mode `mcp`): title length, hours style, hierarchy.
+- **Spec / ADR / handover / meeting notes / UAT logs / saved responses:** dates and business intent.
+- Dates: prefer artefacts above over `git log` alone. Working days only; tasks in order.
 
 ## Step 3. Shape tasks in life-cycle order
 

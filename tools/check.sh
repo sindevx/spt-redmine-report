@@ -57,8 +57,14 @@ if [[ ! -f USER_GUIDE.md ]]; then
   echo "FAIL: missing USER_GUIDE.md"
   fail=1
 fi
-if [[ ! -f commands/setup-spt-redmine-report.md ]]; then
-  echo "FAIL: missing commands/setup-spt-redmine-report.md"
+for cmd in setup-spt-redmine-report spt-redmine-report spt-redmine-report-prepare; do
+  if [[ ! -f "commands/${cmd}.md" ]]; then
+    echo "FAIL: missing commands/${cmd}.md"
+    fail=1
+  fi
+done
+if ! grep -q '/spt-redmine-report-prepare' USER_GUIDE.md || ! grep -q 'not code-only\|not only source code\|multi-source' USER_GUIDE.md; then
+  echo "FAIL: USER_GUIDE.md must document prepare command and non-code evidence"
   fail=1
 fi
 if [[ ! -x scripts/install.sh ]] && [[ ! -f scripts/install.sh ]]; then

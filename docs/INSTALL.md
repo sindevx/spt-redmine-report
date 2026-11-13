@@ -1,7 +1,14 @@
 # Install — easiest first
 
 Repo: https://github.com/sindevx/spt-redmine-report  
-After any install method, run **one-time setup**: `/setup-spt-redmine-report`
+After any install method:
+
+1. Run `scripts/install.sh` (or `--all`) so **all** slash commands are installed  
+2. One-time setup: `/setup-spt-redmine-report`  
+3. Optional prepare: `/spt-redmine-report-prepare`  
+4. Draft report: `/spt-redmine-report`  
+
+Command meanings and non-code evidence: [USER_GUIDE.md](../USER_GUIDE.md).
 
 ---
 

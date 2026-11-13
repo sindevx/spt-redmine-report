@@ -10,8 +10,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-CMD_SRC="$ROOT/commands/setup-spt-redmine-report.md"
-CMD_NAME="setup-spt-redmine-report.md"
+CMD_DIR="$ROOT/commands"
 SKILL_NAME="redmine-report"
 
 DO_CLAUDE=0
@@ -56,8 +55,8 @@ if [[ ! -f "$ROOT/SKILL.md" ]]; then
   echo "FAIL: SKILL.md not found at $ROOT"
   exit 1
 fi
-if [[ ! -f "$CMD_SRC" ]]; then
-  echo "FAIL: missing $CMD_SRC"
+if [[ ! -d "$CMD_DIR" ]] || ! compgen -G "$CMD_DIR"/*.md >/dev/null; then
+  echo "FAIL: no command files in $CMD_DIR"
   exit 1
 fi
 
@@ -77,11 +76,15 @@ link_or_hint() {
   echo "Linked $link → $ROOT"
 }
 
-install_cmd() {
+install_cmds() {
   local dir="$1"
   mkdir -p "$dir"
-  cp "$CMD_SRC" "$dir/$CMD_NAME"
-  echo "Installed /$CMD_NAME → $dir/$CMD_NAME"
+  local f base
+  for f in "$CMD_DIR"/*.md; do
+    base="$(basename "$f")"
+    cp "$f" "$dir/$base"
+    echo "Installed /${base%.md} → $dir/$base"
+  done
 }
 
 echo "Skill root: $ROOT"
@@ -113,11 +116,11 @@ if [[ "$DO_CLAUDE" -eq 1 ]]; then
   else
     link_or_hint "$ROOT" "$CLAUDE_HOME"
   fi
-  install_cmd "${HOME}/.claude/commands"
+  install_cmds "${HOME}/.claude/commands"
   if [[ "$DO_PROJECT" -eq 1 ]]; then
     # Install command into current git repo if we are inside one
     if REPO_ROOT="$(git -C "$PWD" rev-parse --show-toplevel 2>/dev/null)"; then
-      install_cmd "${REPO_ROOT}/.claude/commands"
+      install_cmds "${REPO_ROOT}/.claude/commands"
       echo "Project Claude commands: ${REPO_ROOT}/.claude/commands"
     else
       echo "WARN --project: not inside a git repo; skipped .claude/commands"
@@ -133,10 +136,10 @@ if [[ "$DO_CURSOR" -eq 1 ]]; then
     else
       link_or_hint "$ROOT" "$CURSOR_HOME"
     fi
-    install_cmd "${HOME}/.cursor/commands"
+    install_cmds "${HOME}/.cursor/commands"
     if [[ "$DO_PROJECT" -eq 1 ]]; then
       if REPO_ROOT="$(git -C "$PWD" rev-parse --show-toplevel 2>/dev/null)"; then
-        install_cmd "${REPO_ROOT}/.cursor/commands"
+        install_cmds "${REPO_ROOT}/.cursor/commands"
         echo "Project Cursor commands: ${REPO_ROOT}/.cursor/commands"
       fi
     fi
@@ -152,7 +155,9 @@ fi
 
 echo
 echo "Done."
-echo "Next (Claude Code / Cursor):  /setup-spt-redmine-report"
-echo "Next (Codex):                 \$redmine-report  or ask: setup-spt-redmine-report"
-echo "Reset:                        /setup-spt-redmine-report reset"
-echo "Guide:                        docs/INSTALL.md"
+echo "Commands:"
+echo "  /setup-spt-redmine-report           one-time setup"
+echo "  /spt-redmine-report-prepare         evidence from docs/Postman/notes/…"
+echo "  /spt-redmine-report                 draft the Redmine report"
+echo "  /setup-spt-redmine-report reset     reset setup"
+echo "Guide: USER_GUIDE.md · docs/INSTALL.md"
