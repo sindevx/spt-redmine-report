@@ -23,14 +23,24 @@ The skill **never creates or updates Redmine issues by itself**. It writes files
 
 ```bash
 git clone https://github.com/sindevx/spt-redmine-report.git ~/.claude/skills/redmine-report
-cp ~/.claude/skills/redmine-report/local.example.md ~/.claude/skills/redmine-report/local.md
+~/.claude/skills/redmine-report/scripts/install.sh
 ```
+
+`install.sh` installs the slash command and creates `local.md` if missing.
 
 `local.md` is personal and git-ignored. Do not commit it.
 
 ## One-time setup
 
-On first use (or when `Setup completed` in `local.md` is empty), the skill asks once and fills `local.md`.
+Run this in chat (preferred):
+
+```text
+/setup-spt-redmine-report
+```
+
+That command asks once, probes when possible, writes `local.md`, and shows a **Setup summary**. Do not start a report until setup finishes.
+
+If the slash command is missing from the picker, re-run `scripts/install.sh`, or type the same text: `setup-spt-redmine-report`.
 
 ### Choose a mode
 
@@ -57,13 +67,11 @@ The skill shows that summary in chat once. Later reports reuse `local.md` and do
 
 ### Reset setup
 
-Say:
-
 ```text
-reset redmine-report setup
+/setup-spt-redmine-report reset
 ```
 
-The skill clears or rewrites setup fields and runs Step 0 again.
+Clears setup fields and runs setup again.
 
 ## Everyday use
 
@@ -118,9 +126,11 @@ Aim for `RESULT: PASS`. Fix every `ERROR`. Read every `WARN`.
 
 | Problem | What to do |
 |---|---|
+| Slash command missing | Re-run `scripts/install.sh` |
+| Skill refuses to draft a report | Run `/setup-spt-redmine-report` until Setup summary exists |
 | Skill asks setup every time | Check `local.md`: `Setup completed` needs a date and `Setup summary` must be non-empty |
 | MCP probe fails | Fix auth, or switch Mode to `report-only` / `manual` |
-| Wrong trackers/statuses | Edit `local.md`, or say `reset redmine-report setup` |
+| Wrong trackers/statuses | Edit `local.md`, or run `/setup-spt-redmine-report reset` |
 | Checker `ERROR` | Fix the table (hours, dates, missing description, code names in subject) |
 | Want to change Mode later | Edit `Mode` / `MCP server` in `local.md`, or reset setup |
 
@@ -130,6 +140,8 @@ Aim for `RESULT: PASS`. Fix every `ERROR`. Read every `WARN`.
 |---|---|
 | `SKILL.md` | Instructions the agent follows |
 | `USER_GUIDE.md` | This guide (humans) |
+| `commands/setup-spt-redmine-report.md` | Slash command source (`/setup-spt-redmine-report`) |
+| `scripts/install.sh` | Installs the slash command + `local.md` |
 | `local.example.md` | Template for your `local.md` |
 | `references/full-rules.md` | Detailed rules (loaded on demand) |
 | `scripts/check_report.py` | Validates the report table |

@@ -1,6 +1,8 @@
 # Local settings (personal, git-ignored)
-# First run: skill copies this file to local.md, asks once, probes the instance, then fills every blank it can.
-# Later runs: read local.md only. Re-run setup when the owner says "reset redmine-report setup".
+# Create via: scripts/install.sh
+# Fill via slash command: /setup-spt-redmine-report
+# Reset: /setup-spt-redmine-report reset
+# Later reports read this file only — do not re-ask setup while Setup completed is set.
 
 ## Setup status
 Setup completed:              # YYYY-MM-DD when Step 0 finished; empty = setup required

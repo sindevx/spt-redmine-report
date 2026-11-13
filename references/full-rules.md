@@ -18,14 +18,16 @@ Turns real git history (commits, diffs, dates) into a Redmine-ready report: busi
 
 Not for auto-creating issues by default — this skill produces a report. Pushing to Redmine is a separate step the user must explicitly ask for.
 
-## Step 0a — One-time setup (local.md) before any Redmine or git work for a report
+## Step 0a — One-time setup via `/setup-spt-redmine-report`
 
-Read `local.md` next to SKILL.md. Setup is complete only when `Setup completed` has a date and `Setup summary` is non-empty. Otherwise follow SKILL Step 0: copy `local.example.md` if needed, ask Mode + MCP once, probe, write the instance map, show the summary, wait if blanks remain.
+Preferred entry: `/setup-spt-redmine-report` (optional `reset`). Follow `commands/setup-spt-redmine-report.md`. Install the slash command with `scripts/install.sh`.
+
+Read `local.md` next to SKILL.md. Setup is complete only when `Setup completed` has a date and `Setup summary` is non-empty. If a report is requested while incomplete: stop and tell the owner to run `/setup-spt-redmine-report` — do not guess Mode or MCP.
 - `Mode: mcp` requires a non-empty `MCP server` name chosen by the owner from MCP namespaces on this machine. Never invent the name. Never bake a server name into shipped files.
 - `Mode: report-only` — draft files only; no Redmine GET/POST/PUT from this skill.
 - `Mode: manual` — no MCP; owner pastes tracker/status names into `local.md` once.
 - If a companion task skill exists, keep MCP server name aligned across both local configs.
-- Later reports read `local.md` and do not re-run setup unless the owner says `reset redmine-report setup`.
+- Later reports read `local.md` and do not re-run setup unless the owner runs `/setup-spt-redmine-report reset`.
 
 ## Step 0 — Ask before touching git or Redmine
 

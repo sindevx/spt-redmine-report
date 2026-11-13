@@ -10,22 +10,32 @@ A Claude Code skill that turns finished git commits, a release diff, or a featur
 
 ```bash
 git clone https://github.com/sindevx/spt-redmine-report.git ~/.claude/skills/redmine-report
-cp ~/.claude/skills/redmine-report/local.example.md ~/.claude/skills/redmine-report/local.md
+~/.claude/skills/redmine-report/scripts/install.sh
 ```
 
-On first use the skill runs **one-time setup**: Mode, MCP server (if any), probes trackers/statuses when possible, writes the instance map into `local.md`, and shows a short setup summary so the details are visible later.
+`install.sh` copies the slash command into `~/.claude/commands/` (and `~/.cursor/commands/` when present) and creates `local.md` from the example if missing.
 
 Works with runtimes that read `~/.claude/skills/` (or `~/.agents/skills/`).
 
 ## Setup (once)
+
+In chat:
+
+```text
+/setup-spt-redmine-report
+```
+
+Reset later:
+
+```text
+/setup-spt-redmine-report reset
+```
 
 | Mode | Behaviour |
 |---|---|
 | `report-only` | Default for new installs. Draft files only. No Redmine calls. |
 | `mcp` | Owner picks a Redmine MCP name from namespaces on this machine. Skill probes and stores trackers, statuses, priorities, activities. |
 | `manual` | No MCP. Owner pastes tracker/status names once into `local.md`. |
-
-Re-run only when the owner says `reset redmine-report setup`.
 
 `local.md` is git-ignored. It holds everything instance-specific.
 

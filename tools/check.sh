@@ -54,6 +54,18 @@ if [[ ! -f USER_GUIDE.md ]]; then
   echo "FAIL: missing USER_GUIDE.md"
   fail=1
 fi
+if [[ ! -f commands/setup-spt-redmine-report.md ]]; then
+  echo "FAIL: missing commands/setup-spt-redmine-report.md"
+  fail=1
+fi
+if [[ ! -x scripts/install.sh ]] && [[ ! -f scripts/install.sh ]]; then
+  echo "FAIL: missing scripts/install.sh"
+  fail=1
+fi
+if ! grep -q '/setup-spt-redmine-report' SKILL.md USER_GUIDE.md README.md; then
+  echo "FAIL: docs must mention /setup-spt-redmine-report"
+  fail=1
+fi
 if [[ -d profiles ]]; then
   echo "FAIL: profiles/ must not ship (use local.md only)"
   fail=1

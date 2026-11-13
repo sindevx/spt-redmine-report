@@ -1,6 +1,6 @@
 ---
 name: redmine-report
-description: This skill should be used when the user asks to prepare a Redmine report, story, epic, or task breakdown from finished work (git commits, a feature branch, a release diff, or a vendor API document) before any Redmine push. Writes two draft files and checks them. Never writes to Redmine; pushing is a separate companion step afterwards.
+description: This skill should be used when the user asks to prepare a Redmine report, story, epic, or task breakdown from finished work (git commits, a feature branch, a release diff, or a vendor API document) before any Redmine push. Also use when the user runs /setup-spt-redmine-report or asks to set up or reset spt-redmine-report. Writes two draft files and checks them. Never writes to Redmine; pushing is a separate companion step afterwards.
 ---
 
 # Redmine Release Report
@@ -9,30 +9,15 @@ Prepare a Redmine report a manager can read and the owner can approve. The repor
 
 Detail for every rule below: `references/full-rules.md`. Read only the part needed; do not load it whole. Human install and usage: `USER_GUIDE.md` — point the owner there when they ask how to install, set up, or reset.
 
-## Step 0. One-time setup (before any report)
+## Step 0. One-time setup (slash command)
 
-Done when `local.md` exists, `Setup completed` has a date, and `Setup summary` is non-empty. If setup is incomplete: copy `local.example.md` → `local.md` if missing, run the block below once, probe what can be probed, write every discovered value into `local.md`, show the setup summary to the owner, then stop for confirmation if anything is still blank.
+**Preferred entry:** user runs `/setup-spt-redmine-report` (optional arg `reset`). Follow `commands/setup-spt-redmine-report.md` exactly — setup only, no report draft.
+
+Done when `local.md` exists, `Setup completed` has a date, and `Setup summary` is non-empty.
+
+If the user asks for a report but setup is incomplete: **do not guess**. Tell them to run `/setup-spt-redmine-report` first (after `./scripts/install.sh` if the slash command is missing). Same for `reset redmine-report setup` → treat as `/setup-spt-redmine-report reset`.
 
 Never invent an MCP server name. Never bake instance ids into this skill. Only `local.md` holds machine-specific values.
-
-### Ask once
-
-1. Mode: `mcp` | `report-only` | `manual`? (new install default: `report-only`)
-2. If `mcp`: list Redmine-related MCP namespaces on this machine; owner picks one name. Empty name not allowed.
-3. Default project (id or name), or "ask each report".
-4. Test command for this repo (`none` or the real command).
-5. Custom fields needed on tickets? (`none` or name each).
-6. Optional: sibling issue id for title/hours style.
-
-### Probe and save (same session)
-
-| Mode | Probe |
-|---|---|
-| `mcp` | Read-only: trackers, issue statuses, priorities, time-entry activities, versions for the default project when known. On failure: stay in setup; offer `report-only` or fix auth. |
-| `manual` | Owner pastes tracker and status names (and ids if known). |
-| `report-only` | Skip live Redmine; still save Mode, test command, custom-field choice, preferences. |
-
-Write into `local.md`: Trackers, Statuses, Priorities, Activities, Done status, New status, Hierarchy note, Custom fields, Setup completed (today), and a **Setup summary** of 5–10 plain lines the owner can re-read later (server/mode, project, tracker list, status list, custom fields, test command). Show that summary in chat once. Later reports read `local.md` and do not re-ask setup unless the owner says `reset redmine-report setup`.
 
 If a companion task skill is installed, keep the MCP server name identical in both local configs.
 
